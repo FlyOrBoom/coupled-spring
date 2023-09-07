@@ -24,12 +24,12 @@ X, V, THETA, OMEGA = 0,1,2,3
 x0 = -0.04*l # initial vertical displacement in m
 v0 = 0.02*l # initial vertical velocity in m/s
 theta0 = -0.05*phi # initial anglular displacement in rad
-omega0 = -0.02*phi # initial angular velocity in rad/s
+omega0 = 0.02*phi # initial angular velocity in rad/s
 
 # initial state
 state = [x0, v0, theta0, omega0]
 
-def derivs(t, state):
+def derivs(_, state):
     ddt = np.zeros_like(state)
 
     x = state[X]
@@ -38,7 +38,7 @@ def derivs(t, state):
     omega = state[OMEGA]
 
     a = v*v + r*r*omega*omega - (k*x/M) - (r*r*kappa*theta/I)
-    b = (v*(x+l)/M) + (r*r*r*r*theta*(phi+theta)/I)
+    b = (v*(x+l)/M) + (r*r*r*r*omega*(phi+theta)/I)
     epsilon = 1e-3
     lamb = (a*b)/(b*b + epsilon*epsilon)
 
@@ -51,18 +51,15 @@ def derivs(t, state):
     return ddt
 
 # create a time array from 0..t_stop sampled at 0.02 second steps
-dt = 0.002
-speed = 4
+dt = 0.001
+speed = 10
 t = np.arange(0, t_stop, dt)
 
 # integrate the ODE using Euler's method
 y = np.empty((len(t), 4))
 y[0] = state
-#for i in range(1, len(t)):
-    #y[i] = y[i - 1] + derivs(t[i - 1], y[i - 1]) * dt
-
-# A more accurate estimate could be obtained e.g. using scipy:
 solve = scipy.integrate.solve_ivp(derivs, t[[0, -1]], state, t_eval=t)
+
 print(solve)
 y = solve.y.T
 
