@@ -79,7 +79,7 @@ delta_axes.grid()
 
 net_axes.set_ylim(0, l*1.1)
 net_axes.set_ylabel("Axial position (m)")
-net_axes.set_xlim(-r*1.1, r*1.1)
+net_axes.set_xlim(-R*1.1, R*1.1)
 net_axes.set_xlabel("Transverse position (m)")
 net_axes.invert_yaxis()
 net_axes.grid()
@@ -90,7 +90,7 @@ time_text = delta_axes.text(0.05, 0.9, '', transform=delta_axes.transAxes)
 delta_line, = delta_axes.plot([], [], 'o-', lw=1)
 delta_trace, = delta_axes.plot([], [], '.-', lw=1, ms=2)
 
-net_line, = net_axes.plot([], [], '-x', lw=1)
+net_line, = net_axes.plot([], [], '-', lw=1)
 net_ring, = net_axes.plot([], [], '-o', lw=1)
 
 history_x, history_theta = deque(maxlen=history_len), deque(maxlen=history_len)
@@ -112,11 +112,15 @@ def animate(i):
     delta_line.set_data([0, theta_j], [0, x_j])
     delta_trace.set_data(history_theta, history_x)
 
-    net_line.set_data([0, 0], [0, l_j])
-    N = 36
+    N_arcs = 500
+    net_line.set_data(
+        [r*sin((phi+theta_j)*n/5) for n in range(N_arcs+1)], 
+        [(n/N_arcs) * l_j for n in range(N_arcs+1)]
+    )
+    N_masses = 17
     net_ring.set_data(
-        [ r*sin(theta_j + 2*pi*n/N) for n in range(0,N+1) ],
-        [ l_j + 0.1*r*cos(theta_j + 2*pi*n/N) for n in range(0,N+1) ]
+        [ R*sin(theta_j + 2*pi*n/N_masses) for n in range(N_masses+1) ],
+        [ l_j + 0.1*R*cos(theta_j + 2*pi*n/N_masses) for n in range(N_masses+1) ]
     )
 
     time_text.set_text(time_template % (j*dt))
