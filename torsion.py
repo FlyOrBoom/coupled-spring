@@ -19,6 +19,8 @@ I = M*R*R # moment of inertia of ring in kg*m^2
 t_stop = 30  # how many seconds to simulate
 history_len = 1000  # how many trajectory points to display
 
+γ = 1.0 # coupling constant; should be 1
+
 X, V, Θ, Ω = 0,1,2,3
 
 x0 = -0.04*l # initial vertical displacement in m
@@ -39,14 +41,14 @@ def derivs(_, state):
 
     a = v*v + r*r*ω*ω - (k*x*(x+l)/M) - (r*r*κ*θ*(φ+θ)/I)
     b = (v*(x+l)*(x+l)/M) + (r*r*r*r*ω*(φ+θ)*(φ+θ)/I)
-    ε = 1e-3
+    ε = 1e-5
     λ = (a*b)/(b*b + ε*ε)
 
     ddt[X] = v
-    ddt[V] = -(k*x + λ*v*(x+l))/M
+    ddt[V] = -(k*x + γ*λ*v*(x+l))/M
 
     ddt[Θ] = ω
-    ddt[Ω] = -(κ*θ + λ*r*r*ω*(φ+θ))/I
+    ddt[Ω] = -(κ*θ + γ*λ*r*r*ω*(φ+θ))/I
 
     return ddt
 
