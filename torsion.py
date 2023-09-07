@@ -37,8 +37,8 @@ def derivs(_, state):
     theta = state[THETA]
     omega = state[OMEGA]
 
-    a = v*v + r*r*omega*omega - (k*x/M) - (r*r*kappa*theta/I)
-    b = (v*(x+l)/M) + (r*r*r*r*omega*(phi+theta)/I)
+    a = v*v + r*r*omega*omega - (k*x*(x+l)/M) - (r*r*kappa*theta*(phi+theta)/I)
+    b = (v*(x+l)*(x+l)/M) + (r*r*r*r*omega*(phi+theta)*(phi+theta)/I)
     epsilon = 1e-3
     lamb = (a*b)/(b*b + epsilon*epsilon)
 
