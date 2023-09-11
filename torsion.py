@@ -6,7 +6,7 @@ import matplotlib.animation as animation
 from collections import deque
 
 l = 1.0  # initial length of spring in m
-φ = 1.0 # initial winding angle of spring in rad
+φ = 10.0 # initial winding angle of spring in rad
 r = 0.1  # radius of spring in m
 R = 0.3 # radius of ring
 
@@ -40,6 +40,7 @@ def derivs(_, state):
     ω = state[Ω]
 
     a = M*I*v*v - I*k*x*(l+x) + M*I*r*r*ω*ω - M*r*r*κ*θ*(φ+θ)
+
     b = I*(l+x)*(l+x) + M*r*r*r*r*(φ+θ)*(φ+θ)
     λ = γ*a/b
 
@@ -125,10 +126,10 @@ def animate(i):
     θ = array_θ[j]
     ω = array_ω[j]
 
-    Ex = 0#k*x*x/2
+    Ex = k*x*x/2
     Ev = M*v*v/2
-    Eθ = 0#κ*θ*θ/2
-    Eω = 0#I*ω*ω/2
+    Eθ = κ*θ*θ/2
+    Eω = I*ω*ω/2
 
     if i == 0:
         history_t.clear()
@@ -156,8 +157,8 @@ def animate(i):
 
     N_arcs = 500
     net_line.set_data(
-        [r*sin((φ+θ)*n/5) for n in range(N_arcs+1)], 
-        [(n/N_arcs) * (l+x) for n in range(N_arcs+1)]
+        [ r*sin((φ+θ)*n/N_arcs) for n in range(N_arcs+1) ],
+        [ (n/N_arcs) * (l+x) for n in range(N_arcs+1) ]
     )
     N_masses = 17
     net_ring.set_data(
