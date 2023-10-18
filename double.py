@@ -96,7 +96,5 @@ def animate(i):
     time_text.set_text(time_template % (i*dt))
     return line, trace, time_text
 
-
-ani = animation.FuncAnimation(
-    fig, animate, len(y), interval=dt*1000, blit=True)
+ani = animation.FuncAnimation(fig, animate, len(y), interval=dt*1000, blit=True)
 plt.show()

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 
 xi = 1 # initial displacement (m)
-vi = 0 # initial velocity (m/s)
+vi = -10 # initial velocity (m/s)
 ti = 0 # initial time (s)
 tf = 4 # final time (s)
 samples = 1000 # time resolution (Hz)
@@ -20,13 +20,13 @@ fig.subplots_adjust(bottom=0.3) # shift main plot up
 ax_beta = fig.add_axes([0.25, 0.15, 0.65, 0.03]) # beta slider
 slider_beta = Slider(
     ax=ax_beta, label='beta (rad²/s²)',
-    valmin=0, valmax=10, valinit=3
+    valmin=0, valmax=10, valinit=10
 )
 
 ax_omega0 = fig.add_axes([0.25, 0.05, 0.65, 0.03]) # omega0 slider
 slider_omega0 = Slider(
     ax=ax_omega0, label='omega0 (rad/s)',
-    valmin=0, valmax=100, valinit=30
+    valmin=0, valmax=100, valinit=10
 )
 
 def ddt(_, state): # [x, v] -> [dx/dt, dv/dt]
