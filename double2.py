@@ -18,7 +18,7 @@ r = (L1+L2)*1.1
 ti = 0.0 # s
 tf = 10.0 # s 
 
-samples = 3000 # time resolution (Hz)
+samples = 1000 # time resolution (Hz)
 dt = (tf-ti)/samples # interval (s)
 arrays = {
     "t": np.linspace(ti, tf, num=samples)
@@ -65,7 +65,7 @@ sliders = {
 def ddt(_, state): # [x, v] -> [dx/dt, dv/dt]
     [theta1, theta2, omega1, omega2] = state
 
-    numer1 = -(2*m1 + m2)*g*sin(theta1) - 2*m2*g*sin(theta1-2*theta2) + 2*m2*(L2*omega2*omega2 - omega1*omega1*cos(theta1-theta2))*sin(theta1-theta2)
+    numer1 = -(2*m1 + m2)*g*sin(theta1) - m2*g*sin(theta1-2*theta2) - 2*m2*(L2*omega2*omega2 - omega1*omega1*cos(theta1-theta2))*sin(theta1-theta2)
 
     numer2 = 2*sin(theta1-theta2) * ( (m1+m2)*L1*omega1*omega1 + (m1+m2)*g*cos(theta1) - m2*L2*omega2*omega2*cos(theta1-theta2) )
 
@@ -111,7 +111,7 @@ lines = {
 }
 
 def animate(frame):
-    lookback = max(0, frame-500)
+    lookback = max(0, frame-200)
 
     lines["rod1"].set_data(*np.array([(0,0), arrays["path1"][:, frame]]).T)
     lines["rod2"].set_data(*np.array([arrays["path1"][:, frame], arrays["path2"][:, frame]]).T)
