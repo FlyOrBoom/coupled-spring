@@ -6,11 +6,11 @@ import matplotlib.animation as animation
 from matplotlib.widgets import Slider
 
 m1 = 1.0 # kg
-m2 = 1.0 # kg
-L1 = 1.0 # m 
+m2 = 0.5 # kg
+L1 = 0.5 # m 
 L2 = 1.0 # m 
-theta1i = 0.0 # rad
-theta2i = 0.5 # rad
+theta1i = 2.02 # rad
+theta2i = 0.8 # rad
 g = 9.8 # N/m
 
 r = (L1+L2)*1.1
@@ -56,10 +56,10 @@ fig.subplots_adjust(bottom=0.4) # shift main plots up
 sliders = {
     "m1": Slider( ax=axes["m1"], label="mass 1 (kg)", valmin=0.01, valmax=1, valinit=m1),
     "m2": Slider( ax=axes["m2"], label="mass 2 (kg)", valmin=0.01, valmax=1, valinit=m2),
-    "L1": Slider( ax=axes["L1"], label="length 1 (m)", valmin=0.1, valmax=10, valinit=L1),
-    "L2": Slider( ax=axes["L2"], label="length 2 (m)", valmin=0.1, valmax=10, valinit=L2),
-    "theta1i": Slider( ax=axes["theta1i"], label="initial angle 1 (rad)", valmin=-pi/2, valmax=+pi/2, valinit=theta1i),
-    "theta2i": Slider( ax=axes["theta2i"], label="initial angle 2 (rad)", valmin=-pi/2, valmax=+pi/2, valinit=theta2i),
+    "L1": Slider( ax=axes["L1"], label="length 1 (m)", valmin=0.01, valmax=1, valinit=L1),
+    "L2": Slider( ax=axes["L2"], label="length 2 (m)", valmin=0.01, valmax=1, valinit=L2),
+    "theta1i": Slider( ax=axes["theta1i"], label="initial angle 1 (rad)", valmin=-pi, valmax=+pi, valinit=theta1i),
+    "theta2i": Slider( ax=axes["theta2i"], label="initial angle 2 (rad)", valmin=-pi, valmax=+pi, valinit=theta2i),
 }
 
 def ddt(_, state): # [x, v] -> [dx/dt, dv/dt]
@@ -121,7 +121,7 @@ def animate(frame):
     lines["path1_clip"].set_data(*arrays["path1"][:, lookback:frame])
     lines["path2_clip"].set_data(*arrays["path2"][:, lookback:frame])
 
-    lines["time"].set_text(f"{round(frame*dt, decimals=2)} s")
+    lines["time"].set_text(f"t = {round(frame*dt, decimals=2)} s")
 
     return tuple(lines.values())
 
