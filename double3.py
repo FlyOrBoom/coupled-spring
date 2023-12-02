@@ -1,16 +1,17 @@
 import scipy
+import scipy.integrate
 import numpy as np
 from numpy import pi, sin, cos, round
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.widgets import Slider
 
-m1 = 1.0 # kg
+m1 = 0.3 # kg
 m2 = 0.5 # kg
 L1 = 0.5 # m 
 L2 = 1.0 # m 
 theta1i = 2.02 # rad
-theta2i = 0.8 # rad
+theta2i = 1 # rad
 g = 9.8 # N/m
 
 r = (L1+L2)*1.1
@@ -18,7 +19,7 @@ r = (L1+L2)*1.1
 ti = 0.0 # s
 tf = 10.0 # s 
 
-samples = 1000 # time resolution (Hz)
+samples = 10000 # time resolution (Hz)
 dt = (tf-ti)/samples # interval (s)
 arrays = {
     "t": np.linspace(ti, tf, num=samples)
@@ -31,17 +32,29 @@ fig = plt.figure() # matplotlib figure
 axes = {
     # physical
     "r": fig.add_subplot(
-        1, 2, 1,
+        2, 2, 1,
         xlim = (-r, +r), xlabel = "x displacement (m)",
         ylim = (-r, +r), ylabel = "y displacement (m)",
         aspect = "equal",
     ),
     # phase
     "theta": fig.add_subplot(
-        1, 2, 2,
+        2, 2, 2,
         xlim = (-pi, +pi), xlabel = "angle 1 (rad)",
         ylim = (-pi, +pi), ylabel = "angle 2 (rad)",
         aspect = "equal",
+    ),
+    # energies
+    "energies": fig.add_subplot(
+        2, 2, 3, 
+        xlim = (ti,tf), xlabel = "time (s)",
+        ylim = ( -g*(m1*L1 + m2*(L1+L2)), g*(m1*L1 + m2*(L1+L2))), ylabel = "energy (J)",
+    ),
+    # lagrangian
+    "lagrange": fig.add_subplot(
+        2, 2, 4, 
+        xlim = (ti,tf), xlabel = "time (s)",
+        ylim = ( 0, 2*g*(m1*L1 + m2*(L1+L2))), ylabel = "lagrangian (J)",
     ),
     # sliders
     "m1": fig.add_axes(slider_dims+5*dy),
@@ -82,22 +95,42 @@ def solve(): # array of displacement values
 
     theta1s = solve[:, 0]
     theta2s = solve[:, 1]
-
-    arrays["theta"] = (np.array([ theta1s, theta2s ]) + pi) % (2*pi) - pi
+    
+    omega1s = solve[:, 2]
+    omega2s = solve[:, 3]
+    
+    tee = (0.5*(m1+m2)*(L1**2)*(omega1s**2)) + (0.5*m2*(L2**2)*(omega2s**2)) + (m2*L1*L2*omega1s*omega2s*cos(theta1s-theta2s)) 
+    vee = (-1*(m1+m2)*g*L1*cos(theta1s)) + (-1*m2*g*L2*cos(theta2s))
+    lag = tee - vee
+    ham = tee + vee
+    
+    arrays["theta"] = (np.array([theta1s, theta2s ]) + pi) % (2*pi) - pi
     arrays["path1"] = L1 * np.array([ sin(theta1s), -cos(theta1s) ])
     arrays["path2"] = np.sum([
         arrays["path1"], 
         L2 * np.array([ sin(theta2s), -cos(theta2s) ])
     ], axis=0)
-
+    arrays["lagrangian"] =  np.array([(arrays["t"]),lag])
+    arrays["hamiltonian"] = np.array([(arrays["t"]),ham])
+    arrays["kineticenergy"] = np.array([(arrays["t"]),tee])
+    arrays["potentialenergy"] = np.array([(arrays["t"]),vee])
+   
     lines["theta"].set_data(*arrays["theta"])
     lines["path1"].set_data(*arrays["path1"])
     lines["path2"].set_data(*arrays["path2"])
-
+    lines["lagrangian"].set_data(*arrays["lagrangian"])
+    lines["hamiltonian"].set_data(*arrays["hamiltonian"])
+    lines["kineticenergy"].set_data(*arrays["kineticenergy"])
+    lines["potentialenergy"].set_data(*arrays["potentialenergy"])
+    
 lines = {
     "path1": axes["r"].plot([], [], '.', ms=1, color="pink")[0],
     "path2": axes["r"].plot([], [], '.', ms=1, color="lightblue")[0],
     "theta": axes["theta"].plot([], [], '.', ms=1, color="gray")[0],
+    "lagrangian": axes["lagrange"].plot([],[],'.',ms=1, color = "green")[0],
+    "hamiltonian": axes["energies"].plot([],[],'.',ms=1,color = "red")[0],
+    "kineticenergy": axes["energies"].plot([],[],'.',ms=1, color = "purple")[0],
+    "potentialenergy": axes["energies"].plot([],[],'.',ms=1, color = "black")[0],
 
     "path1_clip": axes["r"].plot([], [], '.', ms=2, color="red")[0],
     "path2_clip": axes["r"].plot([], [], '.', ms=2, color="blue")[0],
@@ -157,5 +190,4 @@ update(0)
 
 ani = animation.FuncAnimation(fig=fig, func=animate, frames=samples, interval=1000*dt, blit=True)
 plt.show()
-
 
