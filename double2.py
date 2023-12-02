@@ -16,10 +16,11 @@ g = 9.8 # N/m
 r = (L1+L2)*1.1
 
 ti = 0.0 # s
-tf = 10.0 # s 
+tf = 100.0 # s 
 
-samples = 1000 # time resolution (Hz)
-dt = (tf-ti)/samples # interval (s)
+samplerate = 1000 # time resolution (Hz)
+samples = int((tf - ti)*samplerate)
+dt = 1/samplerate # interval (s)
 arrays = {
     "t": np.linspace(ti, tf, num=samples)
 }
